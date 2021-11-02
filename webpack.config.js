@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    mode: 'development',
+  mode: 'development',
   entry: './src/index.js',
   output: {
     filename: 'bundle.js',
@@ -10,12 +10,12 @@ module.exports = {
   devServer: {
     static: './dist',
   },
- module: {
-   rules: [
-     {
-       test: /\.css$/i,
-       use: ['style-loader', 'css-loader'],
-     },
-   ],
- },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
 };
