@@ -1,55 +1,84 @@
 import './style.css';
+import changeState from './js/changeState.js';
+import {
+  add, removeAllCompleted, edit, remove,
+} from './js/addRemove.js';
 
-function component() {
-  const list = [
-    {
-      description: 'Finish to do list project',
-      completed: false,
-      index: 0,
-    },
-    {
-      description: 'Clean the kitchen',
-      completed: false,
-      index: 0,
-    },
-  ];
+// Call HTML Elements
+const mainListContainer = document.getElementById('list');
+const addIcon = document.getElementById('add-icon');
+const inputField = document.querySelector('.input-container');
+const clearSelectedBtn = document.getElementById('clear-selected');
 
-  const ul = document.createElement('ul');
-  ul.className = 'list';
-  // Title
-  const title = document.createElement('h2');
-  title.innerHTML = 'Today\'s To Do <i class="fas fa-sync-alt"></i>';
-  title.className = 'title';
-  ul.appendChild(title);
-  // Input
-  const inputContainer = document.createElement('div');
-  const input = document.createElement('input');
-  inputContainer.className = 'input-container';
-  input.type = 'text';
-  input.placeholder = 'Add to your list...';
-  input.className = 'task-input';
-  inputContainer.appendChild(input);
-  inputContainer.innerHTML += '<i class="fas fa-level-down-alt"></i>';
-  ul.appendChild(inputContainer);
-  // Add Btn
-  const btnSubmit = document.createElement('button');
-  btnSubmit.className = 'btn';
-  btnSubmit.textContent = 'Clear all completed';
+class List {
+  constructor() {
+    const newList = JSON.parse(localStorage.getItem('newList'));
+    if (newList) {
+      this.listObj = newList;
+    } else {
+      this.listObj = [];
+    }
+  }
 
-  list.map((task) => {
-    const li = document.createElement('li');
-    li.id = task.index;
-    li.className = 'list_item';
-    li.innerHTML = `    
-    <input type="checkbox" value=${task.completed}/>
-    <p>${task.description}</p>
-    <i class="fas fa-ellipsis-v"></i>
-    `;
-    return ul.appendChild(li);
-  });
-  ul.appendChild(btnSubmit);
-  return ul;
+  createItems(listContainer) {
+    inputField.addEventListener('submit', (e) => {
+      e.preventDefault();
+      return add(this.listObj);
+    });
+    addIcon.addEventListener('click', () => add(this.listObj));
+    clearSelectedBtn.addEventListener('click', () => removeAllCompleted(this.listObj));
+
+    if (this.listObj.length) {
+      this.listObj.forEach((task) => {
+        const li = document.createElement('li');
+        li.id = task.index;
+        li.className = 'list_item';
+        // checkbox
+        const checkBox = document.createElement('input');
+        checkBox.type = 'checkbox';
+        // description
+        const desc = document.createElement('input');
+        desc.className = 'desc';
+        desc.type = 'text';
+        li.append(checkBox, desc);
+        // Icon
+        li.innerHTML += `
+        <i class="fas fa-ellipsis-v drag-icon" id="move-icon"></i>
+        <i class="fas fa-trash d-none" id="trash-icon"></i>
+        `;
+        if (task.completed) {
+          li.childNodes[0].checked = 'true';
+          li.childNodes[1].classList.add('line-through');
+        }
+        li.childNodes[1].value = task.description;
+        // Add Events
+        li.childNodes[0].addEventListener('change', () => changeState(li.childNodes[0], task.index, this.listObj));
+
+        li.childNodes[1].addEventListener('click', () => {
+          li.classList.add('editing-state');
+          li.childNodes[3].classList.add('d-none');
+          li.childNodes[5].classList.remove('d-none');
+        });
+
+        li.childNodes[1].addEventListener('blur', () => {
+          li.classList.remove('editing-state');
+          setTimeout(() => {
+            li.childNodes[3].classList.remove('d-none');
+            li.childNodes[5].classList.add('d-none');
+          }, 400);
+        });
+
+        li.childNodes[1].addEventListener('input', () => edit(li.childNodes[1], task.index, this.listObj));
+        li.childNodes[5].addEventListener('click', () => remove(this.listObj, task.index, listContainer));
+        return listContainer.append(li);
+      });
+    } else {
+      const emptyList = document.createElement('h2');
+      emptyList.className = 'empty-list';
+      emptyList.textContent = 'Add Something today';
+      listContainer.append(emptyList);
+    }
+  }
 }
-
-const div = document.getElementById('list-container');
-div.appendChild(component());
+const list = new List();
+list.createItems(mainListContainer);
