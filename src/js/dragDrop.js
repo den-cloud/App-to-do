@@ -8,7 +8,7 @@ export const allowDrag = () => {
     console.log('we are over the contianer');
   });
 };
-ujkk
+
 export const dragStart = () => {
 
 };
