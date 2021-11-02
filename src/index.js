@@ -4,7 +4,6 @@ import {
   add, removeAllCompleted, edit, remove,
 } from './js/addRemove.js';
 
-
 const mainListContainer = document.getElementById('list');
 const addIcon = document.getElementById('add-icon');
 const inputField = document.querySelector('.input-container');
