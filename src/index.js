@@ -3,13 +3,7 @@ import changeState from './js/changeState.js';
 import {
   add, removeAllCompleted, edit, remove,
 } from './js/addRemove.js';
-const tasks = [
-  {
-    description: 'Mircoverse to-do-list',
-    completed: true,
-    index: 10,
-  },
-];
+
 
 const mainListContainer = document.getElementById('list');
 const addIcon = document.getElementById('add-icon');
