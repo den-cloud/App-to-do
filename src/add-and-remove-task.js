@@ -5,7 +5,7 @@ const updateListIndexes = () => {
   toDoTasks.sort((task1, task2) => task1.index - task2.index);
 
   for (let i = 0; i < toDoTasks.length; i += 1) {
-    toDoTasks[i].index = i + 1;fdfbd
+    toDoTasks[i].index = i + 1;
   }
   localStorageController.createTheLocalStorage('toDoTasks', toDoTasks);
 };
