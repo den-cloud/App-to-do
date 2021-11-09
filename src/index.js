@@ -1,83 +1,102 @@
+/* eslint-disable import/extensions */
+
+import localStorageController from './localStorage-controller.js';
+import taskStatusChange from './task_status_change.js';
+import addAndRemoveTask from './add-and-remove-task';
 import './style.css';
-import changeState from './js/changeState.js';
-import {
-  add, removeAllCompleted, edit, remove,
-} from './js/addRemove.js';
 
-const mainListContainer = document.getElementById('list');
-const addIcon = document.getElementById('add-icon');
-const inputField = document.querySelector('.input-container');
-const clearSelectedBtn = document.getElementById('clear-selected');
+let toDoTasks = [];
 
-class List {
-  constructor() {
-    const newList = JSON.parse(localStorage.getItem('newList'));
-    if (newList) {
-      this.listObj = newList;
-    } else {
-      this.listObj = [];
-    }
+const renderList = () => {
+  if (localStorageController.getDataFromLocalStorage('toDoTasks') == null) {
+    localStorageController.createTheLocalStorage('toDoTasks', toDoTasks);
   }
 
-  createItems(listContainer) {
-    inputField.addEventListener('submit', (e) => {
-      e.preventDefault();
-      return add(this.listObj);
+  toDoTasks = localStorageController.getDataFromLocalStorage('toDoTasks');
+
+  toDoTasks.sort((task1, task2) => task1.index - task2.index);
+
+  const toDoListUL = document.querySelector('ul');
+  toDoListUL.innerHTML = '';
+
+  for (let i = 0; i < toDoTasks.length; i += 1) {
+    const li = document.createElement('li');
+    toDoListUL.appendChild(li);
+
+    const checkboxAndTaskDiv = document.createElement('div');
+    checkboxAndTaskDiv.classList.add('checkbox-task');
+    li.appendChild(checkboxAndTaskDiv);
+
+    const checkBox = document.createElement('input');
+    checkBox.setAttribute('type', 'checkbox');
+    checkBox.checked = toDoTasks[i].completed;
+    checkBox.addEventListener('change', (e) => {
+      const taskDescription = e.currentTarget.nextElementSibling;
+      taskStatusChange(i, e.target.checked);
+      if (e.target.checked) {
+        taskDescription.classList.add('completed');
+      } else {
+        taskDescription.classList.remove('completed');
+      }
     });
-    addIcon.addEventListener('click', () => add(this.listObj));
-    clearSelectedBtn.addEventListener('click', () => removeAllCompleted(this.listObj));
+    checkboxAndTaskDiv.appendChild(checkBox);
 
-    if (this.listObj.length) {
-      this.listObj.forEach((task) => {
-        const li = document.createElement('li');
-        li.id = task.index;
-        li.className = 'list_item';
-        // checkbox
-        const checkBox = document.createElement('input');
-        checkBox.type = 'checkbox';
-        // description
-        const desc = document.createElement('input');
-        desc.className = 'desc';
-        desc.type = 'text';
-        li.append(checkBox, desc);
-        // Icon
-        li.innerHTML += `
-        <i class="fas fa-ellipsis-v drag-icon" id="move-icon"></i>
-        <i class="fas fa-trash d-none" id="trash-icon"></i>
-        `;
-        if (task.completed) {
-          li.childNodes[0].checked = 'true';
-          li.childNodes[1].classList.add('line-through');
-        }
-        li.childNodes[1].value = task.description;
-        // Add Events
-        li.childNodes[0].addEventListener('change', () => changeState(li.childNodes[0], task.index, this.listObj));
-
-        li.childNodes[1].addEventListener('click', () => {
-          li.classList.add('editing-state');
-          li.childNodes[3].classList.add('d-none');
-          li.childNodes[5].classList.remove('d-none');
-        });
-
-        li.childNodes[1].addEventListener('blur', () => {
-          li.classList.remove('editing-state');
-          setTimeout(() => {
-            li.childNodes[3].classList.remove('d-none');
-            li.childNodes[5].classList.add('d-none');
-          }, 400);
-        });
-
-        li.childNodes[1].addEventListener('input', () => edit(li.childNodes[1], task.index, this.listObj));
-        li.childNodes[5].addEventListener('click', () => remove(this.listObj, task.index, listContainer));
-        return listContainer.append(li);
-      });
-    } else {
-      const emptyList = document.createElement('h2');
-      emptyList.className = 'empty-list';
-      emptyList.textContent = 'Add Something today';
-      listContainer.append(emptyList);
+    const taskParagraph = document.createElement('p');
+    taskParagraph.textContent = toDoTasks[i].description;
+    checkboxAndTaskDiv.appendChild(taskParagraph);
+    if (toDoTasks[i].completed) {
+      taskParagraph.classList.add('completed');
     }
+
+    const editTaskDescriptionInput = document.createElement('input');
+    editTaskDescriptionInput.value = toDoTasks[i].description;
+    editTaskDescriptionInput.classList.add('display-none');
+    editTaskDescriptionInput.setAttribute('type', 'text');
+    editTaskDescriptionInput.addEventListener('blur', (e) => {
+      addAndRemoveTask.editTask(e.currentTarget.value, i);
+    });
+    checkboxAndTaskDiv.appendChild(editTaskDescriptionInput);
+
+    const moreIcon = document.createElement('i');
+    moreIcon.classList.add('fas');
+    moreIcon.classList.add('fa-ellipsis-v');
+    moreIcon.addEventListener('click', (e) => {
+      addAndRemoveTask.renderEditAndDeleteArea(e);
+    });
+    li.appendChild(moreIcon);
+
+    const deleteIcon = document.createElement('i');
+    deleteIcon.classList.add('fas');
+    deleteIcon.classList.add('fa-trash-alt');
+    deleteIcon.classList.add('display-none');
+    deleteIcon.addEventListener('click', () => {
+      addAndRemoveTask.deleteTask(i);
+      renderList();
+    });
+    li.appendChild(deleteIcon);
   }
-}
-const list = new List();
-list.createItems(mainListContainer);
+};
+
+renderList();
+
+const addButton = document.querySelector('.fa-plus');
+addButton.addEventListener('click', () => {
+  addAndRemoveTask.addTask(addButton.previousElementSibling.value);
+  addButton.previousElementSibling.value = '';
+  renderList();
+});
+
+const clearCompletedTasksButton = document.querySelector('.container button');
+clearCompletedTasksButton.addEventListener('click', () => {
+  addAndRemoveTask.clearCompletedTasks();
+  renderList();
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target == null) {
+    return;
+  }
+  if (e.target !== e.target.parentNode.querySelector('.checkbox-task input[type="text"]') && e.target !== e.target.parentNode.querySelector('.fa-trash-alt') && e.target !== e.target.parentNode.querySelector('.fa-ellipsis-v') && e.target !== e.target.parentNode.querySelector('input[type="checkbox"]')) {
+    renderList();
+  }
+});
