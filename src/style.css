@@ -133,30 +133,3 @@ h1 {
 .display-none {
   display: none;
 }
-
-/* Start Footer */
-.footer {
-  width: 100%;
-  background-color: #fff;
-  position: absolute;
-  bottom: 0;
-  right: -10px;
-  padding: 8px;
-  text-align: center;
-  font-size: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  align-items: center;
-  box-shadow: 0 4px 9px 1px #480404ab;
-}
-
-.footer p i.fa {
-  color: rgb(155, 4, 4);
-}
-
-.footer div.contacts a {
-  margin-right: 10px;
-  font-size: 20px;
-  color: #000;
-}
