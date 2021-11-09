@@ -1,189 +1,137 @@
-/* GLobal Rules */
-.to-do-list .line-through {
-  text-decoration: line-through;
-  color: rgba(0, 0, 0, 0.596);
-}
-
-.to-do-list .d-none {
-  display: none;
-}
-
-html {
-  overflow: hidden;
-}
-
 body {
-  background-color: #f6f6f6;
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 50px);
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 10px 0;
 }
 
-.editing-state {
-  background-color: #afafaf4d;
+body input[type="text"] {
+  outline: none;
 }
 
-/* Start List */
-.to-do-list {
-  background-color: white;
-  padding: 0;
-  width: 55%;
+h1 {
+  color: rgb(71, 71, 71);
+  margin-bottom: 10px;
+}
+
+.container {
+  width: 90%;
+  box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  overflow-x: hidden;
-  box-shadow: 0 0 6px 1px #00000045;
-  transform: translate(-50%, -50%);
-  position: absolute;
-  top: 50%;
-  left: 50%;
 }
 
-.to-do-list .title {
-  display: flex;
-  font-weight: 200;
-  font-size: 17px;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  width: 100%;
-  padding: 0 0 10px 10px;
-  border-bottom: 1px solid #00000045;
+.container > * {
+  border-bottom: 1px solid rgb(165, 165, 165);
+  padding: 10px;
 }
 
-.to-do-list .title i.fa-sync-alt {
-  margin: 0 15px 0 auto;
-  color: #0000008a;
-}
-
-.to-do-list .input-container {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.to-do-list .input-container .task-input {
-  width: 98%;
-  border: none;
-  outline: none;
-  font-size: 17px;
-  background-color: transparent;
-  padding: 10px 0 10px 10px;
-  border-bottom: 1px solid #00000045;
-}
-
-.to-do-list .input-container .task-input::placeholder {
+::placeholder {
+  color: gray;
   font-style: italic;
 }
 
-.to-do-list .input-container i.fa-level-down-alt {
-  font-size: 14px;
-  margin: 0 15px 0 -25px;
-  color: #0000008a;
-  transform: rotate(90deg);
+.container .add-area input {
+  border: 0;
+  font-size: 20px;
+  width: 96%;
+}
+
+.container ul li i {
   cursor: pointer;
+  color: rgb(71, 71, 71);
 }
 
-.to-do-list .input-container .alert {
-  color: rgb(124, 7, 7);
-  font-size: 18px;
-  width: 100%;
-  margin-left: 10px;
+.container .add-area i {
+  cursor: pointer;
+  color: rgb(71, 71, 71);
 }
 
-.to-do-list .list {
-  margin: 0;
+.container ul li .checkbox-task input[type="checkbox"] {
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border: 1px solid #d5d5d5;
+  border-radius: 3px;
+  position: relative;
+}
+
+.container ul {
+  list-style-type: none;
   padding: 0;
-  width: 100%;
+  margin: 0;
 }
 
-.to-do-list .list .empty-list {
-  text-align: center;
-  font-family: sans-serif;
-  color: #7e7e89;
-  height: 100px;
+.container ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px;
+  border-bottom: 1px solid rgb(165, 165, 165);
+}
+
+.container ul li .checkbox-task {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
+  flex-grow: 9;
+}
+
+.container ul li .checkbox-task input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  left: 15%;
+  width: 50%;
+  height: 25%;
+  border-bottom: 4px solid white;
+  border-left: 4px solid white;
+  border-radius: 20%;
+  transform: rotate(-45deg);
+  display: none;
+}
+
+.container ul li .checkbox-task input[type="checkbox"]:checked {
+  background-color: rgb(19, 150, 19);
+}
+
+.container ul li .checkbox-task input[type="checkbox"]:checked::after {
+  display: block;
+}
+
+.container ul li .checkbox-task input[type="text"] {
+  width: 100%;
+  border: none;
   font-size: 20px;
 }
 
-.to-do-list .list .list_item {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  font-size: 18px;
-  border-bottom: 1px solid #00000045;
-  transition: 0.5s;
-}
-
-.to-do-list .list .list_item input[type="checkbox"] {
-  margin: 0 10px;
-  cursor: pointer;
-}
-
-.to-do-list .list .list_item input[type="text"] {
-  width: 90%;
-  border: none;
-  background-color: transparent;
-  padding: 15px;
-  font-size: 18px;
-  outline: none;
-}
-
-.to-do-list .list .list_item input[type="text"]::placeholder {
-  color: black;
-  font-size: 18px;
-}
-
-.to-do-list .list .list_item i#move-icon {
-  font-size: 15px;
-  margin: 0 15px 0 5px;
-  color: #0000008a;
-  cursor: move;
-}
-
-.to-do-list .list .list_item i#trash-icon {
-  font-size: 18px;
-  margin: 0 15px 0 5px;
-  color: #0000008a;
-  cursor: pointer;
-}
-
-.to-do-list .list .list_item:last-of-type {
-  border: none;
-}
-
-.to-do-list .btn {
-  width: 100%;
-  border: none;
-  outline: none;
-  background-color: #f6f6f6;
-  padding: 10px;
-  cursor: pointer;
+.container ul li .checkbox-task p {
+  color: rgb(71, 71, 71);
   font-size: 20px;
-  color: #7e7e7e;
-  border-top: 1px solid #00000045;
 }
 
-@media screen and (max-width: 576px) {
-  .to-do-list {
-    width: 96%;
-  }
-
-  .to-do-list .input-container .task-input {
-    width: 94%;
-  }
+.container button {
+  align-self: center;
+  margin: 20px 0;
+  font-size: 20px;
+  border: 0;
+  background-color: white;
+  cursor: pointer;
+  color: rgb(71, 71, 71);
 }
 
-@media screen and (min-width: 576px) and (max-width: 991px) {
-  .to-do-list {
-    width: 80%;
-  }
+.container button:hover {
+  text-decoration: underline;
+}
 
-  .to-do-list .input-container .task-input {
-    width: 97%;
-  }
+.completed {
+  text-decoration: line-through;
+}
+
+.display-none {
+  display: none;
 }
 
 /* Start Footer */
